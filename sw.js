@@ -4,6 +4,7 @@ const CACHE_NAME = 'eduplus-v1';
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
+
 // Import Firebase scripts for background message handling in sw.js
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
@@ -21,14 +22,15 @@ const messaging = firebase.messaging();
 
 // Handle background notifications when app is closed or in another tab
 messaging.onBackgroundMessage((payload) => {
-  const notificationTitle = payload.notification.title;
+  const notificationTitle = payload.notification ? payload.notification.title : 'Eduplus Alert';
   const notificationOptions = {
-    body: payload.notification.body,
+    body: payload.notification ? payload.notification.body : 'New student activity received.',
     icon: '/icon.png'
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
 self.addEventListener('activate', (event) => {
   event.waitUntil(clients.claim());
 });
