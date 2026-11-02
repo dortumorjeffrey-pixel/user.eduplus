@@ -25,10 +25,34 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification ? payload.notification.title : 'Eduplus Alert';
   const notificationOptions = {
     body: payload.notification ? payload.notification.body : 'New student activity received.',
-    icon: '/icon.png'
+    icon: '/icon.png',
+    badge: '/icon.png',
+    data: { url: '/lecturer-dashboard.html' }
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Handle click event on the notification popup to open the app window
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data && event.notification.data.url ? event.notification.data.url : '/lecturer-dashboard.html';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // Check if there is already a window open; if so, focus it
+      for (let i = 0; i < windowClients.length; i++) {
+        const client = windowClients[i];
+        if (client.url.includes('lecturer-dashboard') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // Otherwise, open a new window
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
 });
 
 self.addEventListener('activate', (event) => {
