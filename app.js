@@ -1963,6 +1963,25 @@ function initLecturerDashboard() {
     });
   });
 }
+    // Automatically request push notification permission on lecturer dashboard login
+    requestLecturerNotificationPermission();
+
+    renderLecturerCourses();
+
+    if (unsubSelf) unsubSelf();
+    unsubSelf = db.collection('lecturers').doc(userData.uid).onSnapshot(function(doc) {
+      if (doc.exists) {
+        currentUserData = doc.data();
+        currentUserData.uid = doc.id;
+        if (userData.photoURL && avatarImg) {
+          avatarImg.src = currentUserData.photoURL;
+          avatarImg.style.display = 'block';
+        }
+        renderLecturerCourses();
+      }
+    });
+  });
+}
 
 function renderLecturerCourses() {
   var container = document.getElementById('lecCoursesContainer');
