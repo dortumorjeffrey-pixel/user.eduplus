@@ -1,5 +1,5 @@
 {
   "appId": "com.eduplus.app",
   "appName": "Eduplus",
-  "webDir": "."
+  "webDir": "dist"
 }
