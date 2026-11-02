@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Eduplus - Secure Anonymous Interactive Portal</title>
+  <meta name="description" content="Secure anonymous interactive classroom portal connecting students and lecturers with real-time questions, verbal answers, and Paystack subscriptions." />
+
+  <!-- EduPlus (E+) Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f46e5'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-weight='900' font-size='52'>E%2B</text></svg>" />
+
+  <!-- Material Icons & Google Fonts -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Firebase SDKs (v8) & Paystack Inline -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="modal-overlay" style="z-index: 11000;">
+    <div style="text-align:center; color: #fff;">
+      <span class="material-icons" style="font-size: 48px; animation: spin 1s infinite linear;">sync</span>
+      <p id="loadingText" style="margin-top: 12px; font-weight: 600;">Processing...</p>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <!-- Application Header -->
+  <header class="app-header glass">
+    <a href="index.html" class="logo">
+      <span class="material-icons icon">school</span>
+      <span>Eduplus</span>
+    </a>
+  </header>
+
+  <!-- Main Content: Welcome / Landing Page -->
+  <main class="main-content">
+    <div class="glass fade-in" style="padding: 48px 24px; text-align: center; max-width: 680px; margin: 32px auto;">
+      <div style="display: inline-flex; align-items: center; justify-content: center; width: 68px; height: 68px; border-radius: 20px; background: rgba(79, 70, 229, 0.2); margin-bottom: 20px; border: 1px solid rgba(79, 70, 229, 0.4);">
+        <span class="material-icons" style="font-size: 38px; color: #818cf8;">record_voice_over</span>
+      </div>
+
+      <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 14px; background: linear-gradient(to right, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        Anonymous Classroom Engagement
+      </h1>
+      
+      <p style="color: var(--text-muted); max-width: 520px; margin: 0 auto 32px; line-height: 1.65; font-size: 14.5px;">
+        Bridge student-lecturer communication seamlessly. Ask lecture questions without participation anxiety, submit identified verbal responses with your Student ID, and manage classroom streams in real time.
+      </p>
+
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <a href="acknowledgment.html" class="btn btn-primary" style="padding: 14px 28px; font-size: 15px;">
+          <span>Get Started</span>
+          <span class="material-icons" style="font-size: 18px;">arrow_forward</span>
+        </a>
+        <a href="portal-select.html" class="btn btn-secondary" style="padding: 14px 24px; font-size: 15px;">
+          <span>Select Portal</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="global-footer">
+    <p>
+      This website is dedicated to the handwork of <strong>Dortumor Jeffrey Doe</strong>, 
+      a student of The University of Cape Coast (UCC). 
+      Contact <span class="contact-highlight">0536025270 / 0504401479</span> for any assistance.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

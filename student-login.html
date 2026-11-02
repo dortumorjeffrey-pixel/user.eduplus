@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Student Sign In - Eduplus</title>
+
+  <!-- EduPlus (E+) Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f46e5'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-weight='900' font-size='52'>E%2B</text></svg>" />
+
+  <!-- Material Icons & Google Fonts -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Firebase SDKs (v8) & Paystack Inline -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="modal-overlay" style="z-index: 11000;">
+    <div style="text-align:center; color: #fff;">
+      <span class="material-icons" style="font-size: 48px; animation: spin 1s infinite linear;">sync</span>
+      <p id="loadingText" style="margin-top: 12px; font-weight: 600;">Processing...</p>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <!-- Application Header -->
+  <header class="app-header glass">
+    <a href="index.html" class="logo">
+      <span class="material-icons icon">school</span>
+      <span>Eduplus</span>
+    </a>
+  </header>
+
+  <!-- Main Content: Student Login -->
+  <main class="main-content">
+    <div class="glass fade-in" style="padding: 32px 28px; max-width: 440px; margin: 24px auto;">
+      <div style="margin-bottom: 16px;">
+        <a href="portal-select.html" class="btn btn-secondary btn-small">
+          <span class="material-icons" style="font-size: 16px;">arrow_back</span>
+          <span>Back</span>
+        </a>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom: 6px;">
+        <span class="material-icons" style="font-size: 26px; color: var(--primary);">face</span>
+        <h2 style="font-size: 22px; font-weight: 700;">Student Sign In</h2>
+      </div>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 22px;">Access your active student portal and course feeds</p>
+
+      <form onsubmit="event.preventDefault(); loginUser('student');">
+        <div class="form-group">
+          <label for="stuLoginEmail">Email Address</label>
+          <input type="email" id="stuLoginEmail" class="form-control" placeholder="student@univ.edu.gh" required autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label for="stuLoginPass">Password</label>
+          <input type="password" id="stuLoginPass" class="form-control" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="btnStuLogin" style="margin-top: 8px;">
+          <span class="material-icons" style="font-size: 18px;">login</span>
+          <span>Sign In</span>
+        </button>
+      </form>
+      
+      <div style="margin-top: 14px; text-align: center;">
+        <button type="button" class="btn btn-secondary btn-block" id="btnStuGoogleLogin" onclick="handleGoogleSignIn('student')">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16" alt="Google" />
+          <span>Sign In with Google</span>
+        </button>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; margin-top: 18px; font-size: 12px;">
+        <a href="javascript:void(0)" style="color: var(--secondary); text-decoration: none;" onclick="openPaidForgotPassword('student')">Forgot Password?</a>
+        <a href="javascript:void(0)" style="color: var(--secondary); text-decoration: none;" onclick="openFindAccountModal('student')">Find Account</a>
+      </div>
+
+      <div style="margin-top: 22px; border-top: 1px solid var(--glass-border); padding-top: 16px; text-align: center; font-size: 13px;">
+        Don't have an account? 
+        <a href="student-register.html" style="color: #818cf8; font-weight: 700; text-decoration: none; margin-left: 4px;">Register Here</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Find Account -->
+  <div id="findAccountModal" class="modal-overlay">
+    <div class="glass modal-box">
+      <h3 style="margin-bottom: 8px; font-size: 18px;">Find Account by Name</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Search for your registered account name to trigger a 5 GHS paid password reset link via Paystack.</p>
+      <div class="form-group">
+        <input type="text" id="findAccountName" class="form-control" placeholder="Type your full name..." oninput="searchAccountsByName(this.value)" />
+      </div>
+      <div id="searchResultsContainer" class="glass" style="max-height: 200px; overflow-y: auto; display: none; margin-bottom: 16px;"></div>
+      <button class="btn btn-secondary btn-block" onclick="closeModal('findAccountModal')">Close</button>
+    </div>
+  </div>
+
+  <!-- Global Footer -->
+  <footer class="global-footer">
+    <p>
+      This website is dedicated to the handwork of <strong>Dortumor Jeffrey Doe</strong>, 
+      a student of The University of Cape Coast (UCC). 
+      Contact <span class="contact-highlight">0536025270 / 0504401479</span> for any assistance.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    // Pre-fill email from query params if redirected from verification or registration
+    window.addEventListener('DOMContentLoaded', function() {
+      var params = new URLSearchParams(window.location.search);
+      var email = params.get('email');
+      if (email) {
+        var emailInput = document.getElementById('stuLoginEmail');
+        if (emailInput) emailInput.value = email;
+      }
+    });
+  </script>
+</body>
+</html>

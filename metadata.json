@@ -1,0 +1,6 @@
+{
+  "name": "Eduplus Anonymous",
+  "description": "Secure anonymous interactive classroom portal connecting students and lecturers with real-time questions, verbal answers, and Paystack subscriptions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

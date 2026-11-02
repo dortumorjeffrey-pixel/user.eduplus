@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Select Portal - Eduplus</title>
+
+  <!-- EduPlus (E+) Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f46e5'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-weight='900' font-size='52'>E%2B</text></svg>" />
+
+  <!-- Material Icons & Google Fonts -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Firebase SDKs (v8) & Paystack Inline -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Application Header -->
+  <header class="app-header glass">
+    <a href="index.html" class="logo">
+      <span class="material-icons icon">school</span>
+      <span>Eduplus</span>
+    </a>
+  </header>
+
+  <!-- Main Content: Portal Select -->
+  <main class="main-content">
+    <div class="glass fade-in" style="padding: 36px 24px; max-width: 640px; margin: 30px auto; text-align: center;">
+      <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Select Your Portal</h2>
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 24px;">Choose your role to access your dedicated interactive academic environment</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 28px;">
+        
+        <!-- Student Portal Card -->
+        <a href="student-login.html" class="glass" style="padding: 28px 20px; text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; border-color: rgba(79, 70, 229, 0.35); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='#818cf8';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(79, 70, 229, 0.35)';">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: rgba(79, 70, 229, 0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+            <span class="material-icons" style="font-size: 34px; color: var(--primary);">face</span>
+          </div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #fff;">Student Portal</h3>
+          <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 6px; line-height: 1.5;">Ask lecture questions anonymously & submit identified verbal answers</p>
+          <span style="font-size: 11.5px; color: #a5b4fc; font-weight: 600; margin-top: 14px; display: inline-flex; align-items: center; gap: 4px;">
+            Enter Student Portal <span class="material-icons" style="font-size: 14px;">arrow_forward</span>
+          </span>
+        </a>
+
+        <!-- Lecturer Portal Card -->
+        <a href="lecturer-login.html" class="glass" style="padding: 28px 20px; text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; border-color: rgba(6, 182, 212, 0.35); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='#67e8f9';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(6, 182, 212, 0.35)';">
+          <div style="width: 56px; height: 56px; border-radius: 16px; background: rgba(6, 182, 212, 0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+            <span class="material-icons" style="font-size: 34px; color: var(--secondary);">co_present</span>
+          </div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #fff;">Lecturer Portal</h3>
+          <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 6px; line-height: 1.5;">Manage course rooms, monitor anonymous queries & review verbal answers</p>
+          <span style="font-size: 11.5px; color: #67e8f9; font-weight: 600; margin-top: 14px; display: inline-flex; align-items: center; gap: 4px;">
+            Enter Lecturer Portal <span class="material-icons" style="font-size: 14px;">arrow_forward</span>
+          </span>
+        </a>
+
+      </div>
+
+      <div style="text-align: left;">
+        <a href="acknowledgment.html" class="btn btn-secondary btn-small">
+          <span class="material-icons" style="font-size: 16px;">arrow_back</span>
+          <span>Back to Guidelines</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="global-footer">
+    <p>
+      This website is dedicated to the handwork of <strong>Dortumor Jeffrey Doe</strong>, 
+      a student of The University of Cape Coast (UCC). 
+      Contact <span class="contact-highlight">0536025270 / 0504401479</span> for any assistance.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Student Registration - Eduplus</title>
+
+  <!-- EduPlus (E+) Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f46e5'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-weight='900' font-size='52'>E%2B</text></svg>" />
+
+  <!-- Material Icons & Google Fonts -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Firebase SDKs (v8) & Paystack Inline -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="modal-overlay" style="z-index: 11000;">
+    <div style="text-align:center; color: #fff;">
+      <span class="material-icons" style="font-size: 48px; animation: spin 1s infinite linear;">sync</span>
+      <p id="loadingText" style="margin-top: 12px; font-weight: 600;">Processing...</p>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <!-- Application Header -->
+  <header class="app-header glass">
+    <a href="index.html" class="logo">
+      <span class="material-icons icon">school</span>
+      <span>Eduplus</span>
+    </a>
+  </header>
+
+  <!-- Main Content: Student Registration -->
+  <main class="main-content">
+    <div class="glass fade-in" style="padding: 32px 28px; max-width: 460px; margin: 20px auto;">
+      <div style="margin-bottom: 14px;">
+        <a href="student-login.html" class="btn btn-secondary btn-small">
+          <span class="material-icons" style="font-size: 16px;">arrow_back</span>
+          <span>Back to Sign In</span>
+        </a>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom: 4px;">
+        <span class="material-icons" style="font-size: 26px; color: var(--primary);">person_add</span>
+        <h2 style="font-size: 22px; font-weight: 700;">Student Registration</h2>
+      </div>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;">Create your account (GHS 20.00 pass fee via Paystack for 30 days)</p>
+
+      <!-- Duplicate Alert Banner -->
+      <div id="stuDuplicateAlert" style="display:none; padding:12px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); border-radius:10px; font-size:12.5px; color:#fca5a5; margin-bottom:14px; line-height: 1.5;">
+        <span id="stuDuplicateAlertText"></span>
+      </div>
+
+      <button class="btn btn-secondary btn-block" type="button" onclick="handleGoogleRegister('student')" style="margin-bottom: 16px;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16" alt="G" />
+        <span>Register with Google</span>
+      </button>
+
+      <form onsubmit="event.preventDefault(); registerUser('student');">
+        <div class="form-group">
+          <label for="stuRegName">Full Name</label>
+          <input type="text" id="stuRegName" class="form-control" placeholder="e.g. Ama Mensah" required />
+        </div>
+
+        <div class="form-group">
+          <label for="stuRegIndex">Index / Student ID (Optional)</label>
+          <input type="text" id="stuRegIndex" class="form-control" style="text-transform: uppercase;" placeholder="e.g. PS/ITC/21/0001" oninput="this.value = this.value.toUpperCase()" />
+        </div>
+
+        <div class="form-group">
+          <label for="stuRegEmail">Email Address</label>
+          <input type="email" id="stuRegEmail" class="form-control" placeholder="ama@gmail.com" required onblur="checkPrePaymentEmail('student', this.value)" />
+          <div style="font-size:11.5px; color:var(--warning); margin-top:5px; display:flex; align-items:center; gap:4px;">
+            <span class="material-icons" style="font-size:14px;">info</span> Ensure email matches your active payment account.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="stuRegPass">Password</label>
+          <input type="password" id="stuRegPass" class="form-control" placeholder="•••••••• (Min 6 characters)" required minlength="6" />
+        </div>
+
+        <div class="form-group">
+          <label>Profile Picture (Optional)</label>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <div id="stuRegAvatarPreview">
+              <span class="material-icons" style="font-size:42px; color:#94a3b8;">account_circle</span>
+            </div>
+            <input type="file" accept="image/*" style="display:none;" id="stuRegFileInput" onchange="handleFileSelect(event, 'stuRegAvatarPreview', 'stuRegPhotoData')" />
+            <button class="btn btn-secondary btn-small" type="button" onclick="document.getElementById('stuRegFileInput').click()">
+              <span class="material-icons" style="font-size:15px;">upload</span> Upload File
+            </button>
+            <button class="btn btn-secondary btn-small" type="button" onclick="openCameraModal('stuRegAvatarPreview', 'stuRegPhotoData')">
+              <span class="material-icons" style="font-size:15px;">photo_camera</span> Snap Photo
+            </button>
+          </div>
+          <input type="hidden" id="stuRegPhotoData" />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="btnStuReg" style="margin-top: 8px;">
+          <span class="material-icons" style="font-size: 18px;">payment</span>
+          <span>Pay GHS 20.00 & Register</span>
+        </button>
+      </form>
+
+      <div style="margin-top: 18px; text-align: center; font-size: 13px;">
+        Already registered? 
+        <a href="student-login.html" style="color: #818cf8; font-weight: 700; text-decoration: none; margin-left: 4px;">Sign In</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Camera Capture -->
+  <div id="cameraCaptureModal" class="modal-overlay">
+    <div class="glass modal-box" style="text-align:center;">
+      <h3 style="margin-bottom: 12px; font-size: 18px;">Take Profile Photo</h3>
+      <div style="position:relative; width:220px; height:220px; margin:0 auto 16px; border-radius:50%; overflow:hidden; border:3px solid var(--primary);">
+        <video id="cameraVideo" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+        <canvas id="cameraCanvas" style="display:none; width:100%; height:100%; object-fit:cover;"></canvas>
+      </div>
+
+      <div id="cameraLiveButtons" style="display:flex; gap:10px; justify-content:center;">
+        <button class="btn btn-secondary" onclick="closeCameraModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="snapCameraFrame()">
+          <span class="material-icons" style="font-size: 16px;">photo_camera</span> Capture
+        </button>
+      </div>
+
+      <div id="cameraReviewButtons" style="display:none; gap:10px; justify-content:center;">
+        <button class="btn btn-secondary" onclick="retakeCameraPhoto()">Retake</button>
+        <button class="btn btn-primary" onclick="useCapturedPhoto()">
+          <span class="material-icons" style="font-size: 16px;">check</span> Use Photo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Footer -->
+  <footer class="global-footer">
+    <p>
+      This website is dedicated to the handwork of <strong>Dortumor Jeffrey Doe</strong>, 
+      a student of The University of Cape Coast (UCC). 
+      Contact <span class="contact-highlight">0536025270 / 0504401479</span> for any assistance.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

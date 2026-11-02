@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Verify Your Email - Eduplus</title>
+
+  <!-- EduPlus (E+) Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f46e5'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-weight='900' font-size='52'>E%2B</text></svg>" />
+
+  <!-- Material Icons & Google Fonts -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Firebase SDKs (v8) & Paystack Inline -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="modal-overlay" style="z-index: 11000;">
+    <div style="text-align:center; color: #fff;">
+      <span class="material-icons" style="font-size: 48px; animation: spin 1s infinite linear;">sync</span>
+      <p id="loadingText" style="margin-top: 12px; font-weight: 600;">Processing...</p>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <!-- Application Header -->
+  <header class="app-header glass">
+    <a href="index.html" class="logo">
+      <span class="material-icons icon">school</span>
+      <span>Eduplus</span>
+    </a>
+  </header>
+
+  <!-- Main Content: Verification Pending -->
+  <main class="main-content">
+    <div class="glass fade-in" style="padding: 40px 24px; text-align: center; max-width: 480px; margin: 30px auto;">
+      <div style="display: inline-flex; align-items: center; justify-content: center; width: 68px; height: 68px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); margin-bottom: 16px; border: 1px solid rgba(245, 158, 11, 0.35);">
+        <span class="material-icons" style="font-size: 40px; color: var(--warning);">mark_email_unread</span>
+      </div>
+
+      <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 10px;">Verify Your Email</h2>
+      
+      <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+        We have dispatched a verification link to <strong id="verifyPendingEmail" style="color:#fff; word-break: break-all;"></strong>. Please check your inbox (or spam folder) and verify your account to unlock your portal pass.
+      </p>
+
+      <button class="btn btn-primary btn-block" style="padding: 13px;" onclick="checkVerificationStatus()">
+        <span class="material-icons" style="font-size: 18px;">verified</span>
+        <span>I Have Verified - Sign In</span>
+      </button>
+
+      <div style="margin-top: 14px;">
+        <button class="btn btn-secondary btn-block" id="btnResendVerification" onclick="resendVerificationLink()">
+          <span class="material-icons" style="font-size: 18px;">refresh</span>
+          <span id="resendCountdownText">Resend Verification Email</span>
+        </button>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 12.5px; color: var(--text-muted);">
+        Wrong email? 
+        <a href="portal-select.html" style="color: var(--secondary); text-decoration: none; margin-left: 4px;">Return to Portal Selection</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="global-footer">
+    <p>
+      This website is dedicated to the handwork of <strong>Dortumor Jeffrey Doe</strong>, 
+      a student of The University of Cape Coast (UCC). 
+      Contact <span class="contact-highlight">0536025270 / 0504401479</span> for any assistance.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      initVerificationPage();
+    });
+  </script>
+</body>
+</html>

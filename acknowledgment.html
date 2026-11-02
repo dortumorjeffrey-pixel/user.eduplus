@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Academic Integrity Guidelines - Eduplus</title>
+
+  <!-- EduPlus (E+) Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f46e5'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-weight='900' font-size='52'>E%2B</text></svg>" />
+
+  <!-- Material Icons & Google Fonts -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Firebase SDKs (v8) & Paystack Inline -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Application Header -->
+  <header class="app-header glass">
+    <a href="index.html" class="logo">
+      <span class="material-icons icon">school</span>
+      <span>Eduplus</span>
+    </a>
+  </header>
+
+  <!-- Main Content: Acknowledgment -->
+  <main class="main-content">
+    <div class="glass fade-in" style="padding: 36px 28px; max-width: 600px; margin: 30px auto; text-align: center;">
+      <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: rgba(6, 182, 212, 0.15); margin-bottom: 16px; border: 1px solid rgba(6, 182, 212, 0.3);">
+        <span class="material-icons" style="font-size: 36px; color: var(--secondary);">verified_user</span>
+      </div>
+
+      <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 14px;">Academic Integrity Guidelines</h2>
+      
+      <p style="color: var(--text-muted); font-size: 14px; line-height: 1.65; margin-bottom: 24px; text-align: left;">
+        Eduplus is designed to foster a safe, constructive learning environment. While questions submitted in the <strong>Anonymous tab</strong> keep your personal identity hidden from classmates and lecturers, abuse, hate speech, inappropriate language, or harassment will lead to immediate portal access revocation without refund.
+      </p>
+
+      <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 14px; padding: 16px; text-align: left; margin-bottom: 28px; font-size: 13px; color: #cbd5e1; line-height: 1.6;">
+        <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+          <span class="material-icons" style="font-size: 18px; color: var(--success);">check_circle</span>
+          <strong>Respectful Inquiry:</strong> Focus questions on lecture comprehension and clarity.
+        </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+          <span class="material-icons" style="font-size: 18px; color: var(--success);">check_circle</span>
+          <strong>Honest Answers:</strong> Submit verbal answers accurately with your genuine Student ID.
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span class="material-icons" style="font-size: 18px; color: var(--warning);">gavel</span>
+          <strong>Accountability:</strong> System moderation logs preserve platform security.
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="index.html" class="btn btn-secondary">
+          <span class="material-icons" style="font-size: 16px;">arrow_back</span>
+          <span>Back</span>
+        </a>
+        <a href="portal-select.html" class="btn btn-primary">
+          <span>I Agree & Proceed</span>
+          <span class="material-icons" style="font-size: 16px;">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="global-footer">
+    <p>
+      This website is dedicated to the handwork of <strong>Dortumor Jeffrey Doe</strong>, 
+      a student of The University of Cape Coast (UCC). 
+      Contact <span class="contact-highlight">0536025270 / 0504401479</span> for any assistance.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
