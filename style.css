@@ -505,6 +505,8 @@ select.form-control option {
     overflow-y: auto;
     padding: 20px 16px;
   }
+} /* <--- FIXED: Added the missing closing brace here! */
+
 /* --- Startup Loading Screen & Screen States --- */
 .screen {
   position: fixed;
@@ -518,13 +520,6 @@ select.form-control option {
   transition: opacity 0.5s ease-in-out;
   background: #090d16;
   overflow-y: auto;
-}
-
-/* Loading screen centered perfectly */
-#loading-screen {
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
 }
 
 /* --- Force Perfect Center for Loading Screen --- */
