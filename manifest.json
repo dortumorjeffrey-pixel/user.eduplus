@@ -1,32 +1,26 @@
 {
-  "background_color": "#090d16",
-  "description": "Interactive classroom portal for real-time anonymous questions, student verbal answers, and lecturer dashboard management.",
-  "dir": "ltr",
-  "display": "standalone",
-  "name": "Eduplus",
-  "orientation": "portrait",
-  "scope": "/",
   "short_name": "Eduplus",
-  "start_url": "https://eduplus-ucc-edu-gh.onrender.com",
-  "theme_color": "#4f46e5",
+  "name": "Eduplus - Secure Anonymous Interactive Portal",
+  "description": "Interactive classroom portal for real-time anonymous questions, student verbal answers, and lecturer dashboard management.",
   "icons": [
     {
-      "src": "data:image/svg+xml,&amp;lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&amp;gt;&amp;lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&amp;gt;&amp;lt;text x='50%25' y='55%25' dominant-baseline='central' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-weight='900' font-size='52'&amp;gt;E%2B&amp;lt;/text&amp;gt;&amp;lt;/svg&amp;gt;",
-      "type": "image/svg+xml",
-      "isSquare": false,
-      "isPng": false,
-      "isWebp": false,
-      "isJpg": false,
-      "width": 0,
-      "is512x512": false,
-      "is256x256": false,
-      "is192x192": false
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "id": "com.eduplus.app",
-  "prefer_related_applications": false,
-  "categories": [
-    "education"
-  ],
-  "lang": "en"
+  "start_url": "/index.html",
+  "background_color": "#090d16",
+  "theme_color": "#4f46e5",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "id": "com.eduplus.app"
 }
