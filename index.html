@@ -26,60 +26,99 @@
 </head>
 <body>
 
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay" class="modal-overlay" style="z-index: 11000;">
-    <div style="text-align:center; color: #fff;">
-      <span class="material-icons" style="font-size: 48px; animation: spin 1s infinite linear;">sync</span>
-      <p id="loadingText" style="margin-top: 12px; font-weight: 600;">Processing...</p>
-    </div>
-  </div>
-
   <!-- Toast Container -->
   <div id="toastContainer"></div>
 
-  <!-- Application Header -->
-  <header class="app-header glass">
-    <a href="index.html" class="logo">
-      <span class="material-icons icon">school</span>
-      <span>Eduplus</span>
-    </a>
-  </header>
-
-  <!-- Main Content: Welcome / Landing Page -->
-  <main class="main-content">
-    <div class="glass fade-in" style="padding: 48px 24px; text-align: center; max-width: 680px; margin: 32px auto;">
-      <div style="display: inline-flex; align-items: center; justify-content: center; width: 68px; height: 68px; border-radius: 20px; background: rgba(79, 70, 229, 0.2); margin-bottom: 20px; border: 1px solid rgba(79, 70, 229, 0.4);">
-        <span class="material-icons" style="font-size: 38px; color: #818cf8;">record_voice_over</span>
+  <!-- LOADING SCREEN SEQUENCE (Matches your video recording) -->
+  <div id="loading-screen" class="screen active">
+    <div class="loader-content">
+      <div class="logo-box">
+        <span class="material-icons" style="font-size: 28px; color: #818cf8;">school</span>
+        <span>Eduplus</span>
       </div>
-
-      <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 14px; background: linear-gradient(to right, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        Anonymous Classroom Engagement
-      </h1>
+      <p id="loading-text">Securing anonymous lecture room...</p>
       
-      <p style="color: var(--text-muted); max-width: 520px; margin: 0 auto 32px; line-height: 1.65; font-size: 14.5px;">
-        Bridge student-lecturer communication seamlessly. Ask lecture questions without participation anxiety, submit identified verbal responses with your Student ID, and manage classroom streams in real time.
-      </p>
-
-      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-        <a href="acknowledgment.html" class="btn btn-primary" style="padding: 14px 28px; font-size: 15px;">
-          <span>Get Started</span>
-          <span class="material-icons" style="font-size: 18px;">arrow_forward</span>
-        </a>
-        <a href="portal-select.html" class="btn btn-secondary" style="padding: 14px 24px; font-size: 15px;">
-          <span>Select Portal</span>
-        </a>
+      <div class="progress-bar-container">
+        <div id="progress-fill"></div>
       </div>
+      <span id="progress-percentage">0%</span>
     </div>
-  </main>
+  </div>
 
-  <!-- Global Footer -->
-  <footer class="global-footer">
-    <p>
-      This website is dedicated to the handwork of <strong>Dortumor Jeffrey Doe</strong>, 
-      a student of The University of Cape Coast (UCC). 
-      Contact <span class="contact-highlight">0536025270 / 0504401479</span> for any assistance.
-    </p>
-  </footer>
+  <!-- WELCOME / LANDING SCREEN (Revealed after loading completes) -->
+  <div id="welcome-screen" class="screen">
+    <!-- Application Header -->
+    <header class="app-header glass" style="position: absolute; top: 16px; width: calc(100% - 32px);">
+      <a href="index.html" class="logo">
+        <span class="material-icons icon">school</span>
+        <span>Eduplus</span>
+      </a>
+    </header>
+
+    <main class="main-content">
+      <div class="glass fade-in" style="padding: 48px 24px; text-align: center; max-width: 680px; margin: 32px auto;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 68px; height: 68px; border-radius: 20px; background: rgba(79, 70, 229, 0.2); margin-bottom: 20px; border: 1px solid rgba(79, 70, 229, 0.4);">
+          <span class="material-icons" style="font-size: 38px; color: #818cf8;">record_voice_over</span>
+        </div>
+
+        <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 14px; background: linear-gradient(to right, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          Anonymous Classroom Engagement
+        </h1>
+        
+        <p style="color: var(--text-muted); max-width: 520px; margin: 0 auto 32px; line-height: 1.65; font-size: 14.5px;">
+          Bridge student-lecturer communication seamlessly. Ask lecture questions without participation anxiety, submit identified verbal responses with your Student ID, and manage classroom streams in real time.
+        </p>
+
+        <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+          <a href="acknowledgment.html" class="btn btn-primary" style="padding: 14px 28px; font-size: 15px;">
+            <span>Get Started</span>
+            <span class="material-icons" style="font-size: 18px;">arrow_forward</span>
+          </a>
+          <a href="portal-select.html" class="btn btn-secondary" style="padding: 14px 24px; font-size: 15px;">
+            <span>Select Portal</span>
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Global Footer -->
+    <footer class="global-footer" style="position: absolute; bottom: 0; width: 100%;">
+      <p>
+        This website is dedicated to the handwork of <strong>Dortumor Jeffrey Doe</strong>, 
+        a student of The University of Cape Coast (UCC). 
+        Contact <span class="contact-highlight">0536025270 / 0504401479</span> for any assistance.
+      </p>
+    </footer>
+  </div>
+
+  <!-- Startup Sequence Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const loadingScreen = document.getElementById("loading-screen");
+      const welcomeScreen = document.getElementById("welcome-screen");
+      const progressFill = document.getElementById("progress-fill");
+      const progressPercentage = document.getElementById("progress-percentage");
+
+      let currentProgress = 0;
+      
+      const loadingInterval = setInterval(() => {
+        currentProgress += Math.floor(Math.random() * 4) + 2; 
+
+        if (currentProgress >= 100) {
+          currentProgress = 100;
+          clearInterval(loadingInterval);
+          
+          setTimeout(() => {
+            loadingScreen.classList.remove("active");
+            welcomeScreen.classList.add("active");
+          }, 350);
+        }
+
+        if (progressFill) progressFill.style.width = `${currentProgress}%`;
+        if (progressPercentage) progressPercentage.textContent = `${currentProgress}%`;
+      }, 30);
+    });
+  </script>
 
   <script src="app.js"></script>
 </body>
