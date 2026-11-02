@@ -6,36 +6,48 @@ on:
 
 jobs:
   build:
-   runs-on: ubuntu-latest
-   steps:
-     - name: Checkout code
-       uses: actions/checkout@v4
+    name: Build Debug APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-     - name: Set up Node.js
-       uses: actions/setup-node@v4
-       with:
-         node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-     - name: Set up Java
-       uses: actions/setup-java@v3
-       with:
-         distribution: 'temurin'
-         java-version: '17'
+      - name: Install Dependencies & Build Frontend
+        run: |
+          npm install --legacy-peer-deps
+          # If you use Vite, this builds your dist/ or build/ folder. 
+          # Change 'npm run build' to match your build script in package.json if different.
+          npm run build --if-present
 
-     - name: Install dependencies & build
-       run: |
-        npm install --legacy-peer-deps
-         npx cap init --yes --name "Eduplus" --package-id "com.eduplus.app" --web-dir "."
-         npx cap sync android
-         cd android
-         chmod +x gradlew
-         ./gradlew assembleDebug
+      - name: Initialize Capacitor & Add Android
+        run: |
+          # Installs Capacitor CLI locally if not present and sets up project
+          npx cap init --yes --name "Eduplus" --package-id "com.eduplus.app" --web-dir "dist"
+          npx cap add android
+          npx cap sync android
 
-     - name: Upload APK to GitHub Releases
-       uses: softprops/action-gh-release@v2
-       with:
-         tag_name: app-v1.${{ github.run_number }}
-         name: Eduplus App v1.${{ github.run_number }}
-         files: android/app/build/outputs/apk/debug/app-debug.apk
-       env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Make gradlew executable and Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-v1.0.${{ github.run_number }}
+          name: Eduplus App v1.0.${{ github.run_number }}
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
