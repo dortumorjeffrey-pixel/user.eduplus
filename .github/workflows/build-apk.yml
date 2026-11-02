@@ -26,7 +26,7 @@ jobs:
        run: |
         npm install --legacy-peer-deps
          npx cap init --yes --name "Eduplus" --package-id "com.eduplus.app" --web-dir "."
-         npx cap add android
+         npx cap sync android
          cd android
          chmod +x gradlew
          ./gradlew assembleDebug
