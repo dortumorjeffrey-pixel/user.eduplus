@@ -1,7 +1,3 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-admin.initializeApp();
-
 exports.sendNotificationOnQuestion = functions.firestore
   .document('questions/{questionId}')
   .onCreate(async (snap, context) => {
