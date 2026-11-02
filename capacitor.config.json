@@ -1,5 +1,11 @@
 {
   "appId": "com.eduplus.app",
   "appName": "Eduplus",
-  "webDir": "dist"
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
 }
