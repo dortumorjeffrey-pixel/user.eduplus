@@ -24,7 +24,7 @@ jobs:
 
      - name: Build Debug APK
        run: |
-         npm install --legacy-peer-deps.
+         npm install --force
          npx cap init --yes --name "Eduplus" --package-id "com.eduplus.app" --web-dir "."
          npx cap add android
          cd android
