@@ -1,12 +1,12 @@
 {
   "short_name": "Eduplus",
-  "name": "Eduplus - Secure Anonymous Interactive Portal",
-  "description": "Interactive classroom portal for real-time anonymous questions, student verbal answers, and lecturer dashboard management.",
+  "name": "Eduplus - Anonymous Classroom Engagement",
+  "description": "Bridge student-lecturer communication seamlessly with real-time anonymous questions, student verbal answers, and lecturer management dashboards.",
   "icons": [
     {
       "src": "icon.png",
       "type": "image/png",
-      "sizes": "512x512",
+      "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
@@ -16,11 +16,51 @@
       "purpose": "any maskable"
     }
   ],
+  "screenshots": [
+    {
+      "src": "01_welcome.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Welcome to Eduplus Anonymous Classroom Engagement"
+    },
+    {
+      "src": "02_student_portal.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Student Course Portal and Selection"
+    },
+    {
+      "src": "03_anonymous_questions.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Submit Questions Anonymously in Real-Time"
+    },
+    {
+      "src": "04_lecturer_dashboard.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Lecturer Dashboard and Questions Inbox"
+    },
+    {
+      "src": "05_verbal_answers.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Submit and Manage Student Verbal Answers"
+    }
+  ],
   "start_url": "/index.html",
   "background_color": "#090d16",
   "theme_color": "#4f46e5",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
-  "id": "com.eduplus.app"
+  "id": "com.eduplus.app",
+  "categories": [
+    "education"
+  ]
 }
