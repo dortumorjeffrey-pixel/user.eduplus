@@ -22,6 +22,12 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
+// Set persistence to SESSION so individual tabs can log into different accounts independently
+auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+  .catch((error) => {
+    console.error("Auth persistence error:", error);
+  });
+
 // --- 2. GLOBAL STATE ---
 let currentRole = null;          // 'student' | 'lecturer'
 let currentUserData = null;      // Cached Firestore user profile
