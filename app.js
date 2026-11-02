@@ -1150,7 +1150,6 @@ function requireAuth(expectedRole, onReadyCallback) {
       var doc = await db.collection(collection).doc(user.uid).get();
 
       if (!doc.exists) {
-        // Check if signed in as opposite role
         var otherCollection = expectedRole === 'student' ? 'lecturers' : 'students';
         var otherDoc = await db.collection(otherCollection).doc(user.uid).get();
         if (otherDoc.exists) {
@@ -1409,7 +1408,6 @@ function initStudentDashboard() {
     checkStudentIndexPrompt();
     loadCoursesForStudent();
 
-    // Attach listeners
     var qInput = document.getElementById('stuQuestionInput');
     if (qInput) {
       qInput.addEventListener('keydown', function(e) {
@@ -1430,7 +1428,6 @@ function initStudentDashboard() {
       });
     }
 
-    // Real-time self listener
     if (unsubSelf) unsubSelf();
     unsubSelf = db.collection('students').doc(userData.uid).onSnapshot(function(docSnap) {
       if (docSnap.exists) {
@@ -1910,7 +1907,28 @@ async function studentDeleteAllQuestions() {
   }
 }
 
-// --- 17. LECTURER DASHBOARD CONTROLLERS ---
+// --- 17. LECTURER DASHBOARD CONTROLLERS & FCM PUSH REGISTRATION ---
+async function requestLecturerNotificationPermission() {
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      const messaging = firebase.messaging();
+      const token = await messaging.getToken({ 
+        vapidKey: 'BJBO8yK_V-eTvqcwdGw4vHvbTMn9zdiuGzHvDpqE3y02BsAKSwuOIM5heddfHmNtG84Gur0XgDYvyEemeebyfj0' 
+      });
+      
+      if (token && currentUserData && currentUserData.uid) {
+        await db.collection('lecturers').doc(currentUserData.uid).set({
+          fcmToken: token
+        }, { merge: true });
+        console.log('Lecturer FCM Device Token saved successfully.');
+      }
+    }
+  } catch (error) {
+    console.warn('Notification permission denied or unsupported:', error);
+  }
+}
+
 function initLecturerDashboard() {
   requireAuth('lecturer', function(userData) {
     var userEl = document.getElementById('lecDashUserInfo');
@@ -1925,6 +1943,9 @@ function initLecturerDashboard() {
         avatarImg.style.display = 'none';
       }
     }
+
+    // Automatically request push notification permission on lecturer dashboard login
+    requestLecturerNotificationPermission();
 
     renderLecturerCourses();
 
