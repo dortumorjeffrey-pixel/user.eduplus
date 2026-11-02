@@ -29,14 +29,14 @@
   <!-- Toast Container -->
   <div id="toastContainer"></div>
 
-  <!-- LOADING SCREEN SEQUENCE (Matches your video recording) -->
-  <div id="loading-screen" class="screen active">
+  <!-- STARTUP LOADING SCREEN SEQUENCE -->
+  <div id="loading-screen" class="screen">
     <div class="loader-content">
       <div class="logo-box">
         <span class="material-icons" style="font-size: 28px; color: #818cf8;">school</span>
         <span>Eduplus</span>
       </div>
-      <p id="loading-text">Securing anonymous lecture room...</p>
+      <p id="loading-text">Initializing secure environment...</p>
       
       <div class="progress-bar-container">
         <div id="progress-fill"></div>
@@ -46,15 +46,16 @@
   </div>
 
   <!-- WELCOME / LANDING SCREEN (Revealed after loading completes) -->
-  <div id="welcome-screen" class="screen">
+  <div id="welcome-screen" class="screen" style="opacity: 0; pointer-events: none;">
     <!-- Application Header -->
-    <header class="app-header glass" style="position: absolute; top: 16px; width: calc(100% - 32px);">
+    <header class="app-header glass">
       <a href="index.html" class="logo">
         <span class="material-icons icon">school</span>
         <span>Eduplus</span>
       </a>
     </header>
 
+    <!-- Main Content: Welcome / Landing Page -->
     <main class="main-content">
       <div class="glass fade-in" style="padding: 48px 24px; text-align: center; max-width: 680px; margin: 32px auto;">
         <div style="display: inline-flex; align-items: center; justify-content: center; width: 68px; height: 68px; border-radius: 20px; background: rgba(79, 70, 229, 0.2); margin-bottom: 20px; border: 1px solid rgba(79, 70, 229, 0.4);">
@@ -82,7 +83,7 @@
     </main>
 
     <!-- Global Footer -->
-    <footer class="global-footer" style="position: absolute; bottom: 0; width: 100%;">
+    <footer class="global-footer">
       <p>
         This website is dedicated to the handwork of <strong>Dortumor Jeffrey Doe</strong>, 
         a student of The University of Cape Coast (UCC). 
@@ -91,32 +92,45 @@
     </footer>
   </div>
 
-  <!-- Startup Sequence Script -->
+  <!-- Exact Loading Sequence Speed & Text Switcher Script -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const loadingScreen = document.getElementById("loading-screen");
       const welcomeScreen = document.getElementById("welcome-screen");
       const progressFill = document.getElementById("progress-fill");
       const progressPercentage = document.getElementById("progress-percentage");
+      const loadingText = document.getElementById("loading-text");
 
       let currentProgress = 0;
       
       const loadingInterval = setInterval(() => {
-        currentProgress += Math.floor(Math.random() * 4) + 2; 
+        currentProgress += Math.floor(Math.random() * 3) + 2; 
 
         if (currentProgress >= 100) {
           currentProgress = 100;
+          if (loadingText) loadingText.textContent = "Ready!";
+          if (progressPercentage) progressPercentage.textContent = "100%";
+          if (progressFill) progressFill.style.width = "100%";
+          
           clearInterval(loadingInterval);
           
           setTimeout(() => {
-            loadingScreen.classList.remove("active");
-            welcomeScreen.classList.add("active");
-          }, 350);
+            loadingScreen.style.opacity = "0";
+            loadingScreen.style.pointerEvents = "none";
+            welcomeScreen.style.opacity = "1";
+            welcomeScreen.style.pointerEvents = "auto";
+          }, 400);
+        } else {
+          // Dynamic status text matching milestones
+          if (currentProgress < 50) {
+            if (loadingText) loadingText.textContent = "Initializing secure environment...";
+          } else {
+            if (loadingText) loadingText.textContent = "Connecting to university portal...";
+          }
+          if (progressFill) progressFill.style.width = `${currentProgress}%`;
+          if (progressPercentage) progressPercentage.textContent = `${currentProgress}%`;
         }
-
-        if (progressFill) progressFill.style.width = `${currentProgress}%`;
-        if (progressPercentage) progressPercentage.textContent = `${currentProgress}%`;
-      }, 30);
+      }, 35);
     });
   </script>
 
