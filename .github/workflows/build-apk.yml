@@ -20,14 +20,10 @@ jobs:
       - name: Install Dependencies & Build Frontend
         run: |
           npm install --legacy-peer-deps
-          # If you use Vite, this builds your dist/ or build/ folder. 
-          # Change 'npm run build' to match your build script in package.json if different.
           npm run build --if-present
 
-      - name: Initialize Capacitor & Add Android
+      - name: Add Android Platform & Sync
         run: |
-          # Installs Capacitor CLI locally if not present and sets up project
-          npx cap init --yes --name "Eduplus" --package-id "com.eduplus.app" --web-dir "dist"
           npx cap add android
           npx cap sync android
 
