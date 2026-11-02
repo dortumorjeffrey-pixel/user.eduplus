@@ -505,7 +505,7 @@ select.form-control option {
     overflow-y: auto;
     padding: 20px 16px;
   }
-  /* --- Startup Loading Screen Styles --- */
+/* --- Startup Loading Screen Styles --- */
 .screen {
   position: fixed;
   top: 0;
@@ -515,18 +515,15 @@ select.form-control option {
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease-in-out;
+  justify-content: space-between;
+  transition: opacity 0.5s ease-in-out;
   background: #090d16;
-  z-index: 10000;
 }
 
-.screen.active {
-  opacity: 1;
-  pointer-events: auto;
+#loading-screen {
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
 }
 
 .loader-content {
@@ -548,6 +545,7 @@ select.form-control option {
   font-weight: 700;
   margin-bottom: 20px;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  color: #fff;
 }
 
 #loading-text {
