@@ -109,15 +109,25 @@ function maskEmail(email) {
   return name[0] + '***' + name[name.length - 1] + '@' + parts[1];
 }
 
-// --- 4. TOAST NOTIFICATIONS & LOADING OVERLAY ---
+// --- 4. TOAST NOTIFICATIONS & LOADING OVERLAY (WITH SAFETY TIMEOUT) ---
+let loadingTimeoutTimer = null;
+
 function showLoading(text) {
   var overlay = document.getElementById('loadingOverlay');
   var textEl = document.getElementById('loadingText');
   if (textEl) textEl.textContent = text || 'Loading...';
   if (overlay) overlay.classList.add('active');
+
+  // SAFETY FAILSAFE: Never let the loading screen get stuck for more than 3.5 seconds
+  clearTimeout(loadingTimeoutTimer);
+  loadingTimeoutTimer = setTimeout(function() {
+    hideLoading();
+    console.warn('Loading overlay forcefully dismissed by safety timer.');
+  }, 6500);
 }
 
 function hideLoading() {
+  clearTimeout(loadingTimeoutTimer);
   var overlay = document.getElementById('loadingOverlay');
   if (overlay) overlay.classList.remove('active');
 }
