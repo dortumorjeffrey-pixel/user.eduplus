@@ -117,7 +117,6 @@ function updateLecturerCounters(qCount, aCount) {
   if (lqBadge) lqBadge.textContent = qCount;
   if (labBadge) labBadge.textContent = aCount;
 
-  // Maintain your existing expanded view counters for lecturer
   const expQ = document.getElementById('expandedLecturerQCount');
   if (expQ) expQ.textContent = qCount;
 
@@ -133,7 +132,6 @@ function updateStudentCounters(qCount, aCount) {
   if (sqBadge) sqBadge.textContent = qCount;
   if (sabBadge) sabBadge.textContent = aCount;
 
-  // Maintain your existing expanded view counters for student
   const expQ = document.getElementById('expandedStudentQCount');
   if (expQ) expQ.textContent = qCount;
 
@@ -141,18 +139,23 @@ function updateStudentCounters(qCount, aCount) {
   if (expA) expA.textContent = aCount;
 }
 
-// --- 4. TOAST NOTIFICATIONS & LOADING OVERLAY (WITH SAFETY TIMEOUT) ---
+// --- 4. TOAST NOTIFICATIONS, BANNERS & LOADING OVERLAY ---
 let loadingTimeoutTimer = null;
 
-// Request Notification Permission
-if ('Notification' in window && 'serviceWorker' in navigator) {
-  Notification.requestPermission().then((permission) => {
-    if (permission === 'granted') {
-      console.log('Notification permission granted.');
-    } else {
-      console.log('Notification permission denied.');
-    }
-  });
+// Ask the user for permission to display banner alerts once on startup
+if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+  Notification.requestPermission().catch(() => {});
+}
+
+// Helper function to trigger a native phone/browser top banner notification
+function triggerPhoneBanner(titleText, bodyText) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(titleText, {
+      body: bodyText,
+      icon: '/icon.png', // Uses your Eduplus app icon
+      vibrate: [200, 100, 200]
+    });
+  }
 }
 
 function showLoading(text) {
@@ -1691,8 +1694,6 @@ function loadQuestionsForStudent(courseCode) {
       });
 
       if (countBadge) countBadge.textContent = questions.length;
-      
-      // Update Student Counter Badges (Tab Badge & Expanded View)
       updateStudentCounters(questions.length, parseInt(document.getElementById('stuAnswerCountBadge')?.textContent || '0', 10));
 
       questions.sort(function(a, b) { return a._ts.getTime() - b._ts.getTime(); });
@@ -1808,8 +1809,6 @@ function loadAnswersForStudent(courseCode) {
       });
 
       if (countBadge) countBadge.textContent = answers.length;
-      
-      // Update Student Counter Badges (Tab Badge & Expanded View)
       updateStudentCounters(parseInt(document.getElementById('stuQuestionCountBadge')?.textContent || '0', 10), answers.length);
 
       answers.sort(function(a, b) { return a._ts.getTime() - b._ts.getTime(); });
@@ -2345,8 +2344,6 @@ function loadQuestionsForLecturer() {
       });
 
       if (countBadge) countBadge.textContent = questions.length;
-      
-      // Update Lecturer Counter Badges (Tab Badge & Expanded View)
       updateLecturerCounters(questions.length, parseInt(document.getElementById('lecAnswerCountBadge')?.textContent || '0', 10));
 
       questions.sort(function(a, b) { return a._ts.getTime() - b._ts.getTime(); });
@@ -2424,8 +2421,6 @@ function loadAnswersForLecturer() {
       });
 
       if (countBadge) countBadge.textContent = answers.length;
-      
-      // Update Lecturer Counter Badges (Tab Badge & Expanded View)
       updateLecturerCounters(parseInt(document.getElementById('lecQuestionCountBadge')?.textContent || '0', 10), answers.length);
 
       answers.sort(function(a, b) { return a._ts.getTime() - b._ts.getTime(); });
@@ -2700,11 +2695,9 @@ function triggerLecturerAlert(title, message, courseCode) {
   playWebAudioChime();
   showToast(title + ' (' + courseCode + '): ' + message.substring(0, 50) + '...', 'info');
 
-  if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && document.hidden) {
-    new Notification('Eduplus: ' + title, {
-      body: message,
-      icon: '/icon.png'
-    });
+  // Uses the triggerPhoneBanner helper for top-screen banners when app is minimized/hidden
+  if (document.hidden) {
+    triggerPhoneBanner('Eduplus: ' + title, message);
   }
 }
 
@@ -2713,10 +2706,6 @@ function setupLecturerRealtimeAlerts(courseCode) {
 
   if (unsubRealtimeQuestions) { unsubRealtimeQuestions(); unsubRealtimeQuestions = null; }
   if (unsubRealtimeAnswers) { unsubRealtimeAnswers(); unsubRealtimeAnswers = null; }
-
-  if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
-    Notification.requestPermission();
-  }
 
   lecturerInitialLoadDone = false;
 
