@@ -36,26 +36,30 @@ messaging.onBackgroundMessage((payload) => {
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-// Handle tap on the notification to open the app
+// Handle tap on the notification banner to open the website/app
 self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const targetUrl = event.notification.data && event.notification.data.url ? event.notification.data.url : '/lecturer-dashboard.html';
+  event.notification.close(); // Dismisses the notification banner
+
+  // Define the exact page you want to open when tapped
+  const targetUrl = self.location.origin + '/lecturer-dashboard.html';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // 1. Check if the app is already open in a tab or window; if so, focus it
       for (let i = 0; i < windowClients.length; i++) {
         const client = windowClients[i];
         if (client.url.includes('lecturer-dashboard') && 'focus' in client) {
           return client.focus();
         }
       }
+      
+      // 2. If no window is open, open a new window/tab to your dashboard
       if (clients.openWindow) {
         return clients.openWindow(targetUrl);
       }
     })
   );
 });
-
 self.addEventListener('activate', (event) => {
   event.waitUntil(clients.claim());
 });
