@@ -1907,25 +1907,14 @@ async function studentDeleteAllQuestions() {
   }
 }
 
-// --- 17. LECTURER DASHBOARD CONTROLLERS & FCM PUSH REGISTRATION ---
+// --- 17. LECTURER DASHBOARD CONTROLLERS & REAL-TIME ALERTS ---
 async function requestLecturerNotificationPermission() {
   try {
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      const messaging = firebase.messaging();
-      const token = await messaging.getToken({ 
-        vapidKey: 'BJBO8yK_V-eTvqcwdGw4vHvbTMn9zdiuGzHvDpqE3y02BsAKSwuOIM5heddfHmNtG84Gur0XgDYvyEemeebyfj0' 
-      });
-      
-      if (token && currentUserData && currentUserData.uid) {
-        await db.collection('lecturers').doc(currentUserData.uid).set({
-          fcmToken: token
-        }, { merge: true });
-        console.log('Lecturer FCM Device Token saved successfully.');
-      }
+    if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
+      await Notification.requestPermission();
     }
   } catch (error) {
-    console.warn('Notification permission denied or unsupported:', error);
+    console.warn('Notification permission error:', error);
   }
 }
 
@@ -1944,29 +1933,15 @@ function initLecturerDashboard() {
       }
     }
 
-    // Automatically request push notification permission on lecturer dashboard login
+    // Request browser notification permissions on lecturer dashboard login
     requestLecturerNotificationPermission();
 
     renderLecturerCourses();
 
-    if (unsubSelf) unsubSelf();
-    unsubSelf = db.collection('lecturers').doc(userData.uid).onSnapshot(function(doc) {
-      if (doc.exists) {
-        currentUserData = doc.data();
-        currentUserData.uid = doc.id;
-        if (userData.photoURL && avatarImg) {
-          avatarImg.src = currentUserData.photoURL;
-          avatarImg.style.display = 'block';
-        }
-        renderLecturerCourses();
-      }
-    });
-  });
-}
-    // Automatically request push notification permission on lecturer dashboard login
-    requestLecturerNotificationPermission();
-
-    renderLecturerCourses();
+    // Enable client-side real-time pop-ups and chimes for active course
+    if (currentCourseCode) {
+      setupLecturerRealtimeAlerts(currentCourseCode);
+    }
 
     if (unsubSelf) unsubSelf();
     unsubSelf = db.collection('lecturers').doc(userData.uid).onSnapshot(function(doc) {
@@ -2037,11 +2012,15 @@ function renderLecturerCourses() {
     currentCourseCode = courses[0].courseCode;
   }
   filterSelect.value = currentCourseCode;
+  
+  // Setup real-time alerts for the active course
+  setupLecturerRealtimeAlerts(currentCourseCode);
   switchLecturerTab(activeLecturerTab);
 }
 
 function switchLecturerActiveCourse(code) {
   currentCourseCode = code;
+  setupLecturerRealtimeAlerts(currentCourseCode);
   loadQuestionsForLecturer();
   loadAnswersForLecturer();
 }
@@ -2528,4 +2507,98 @@ async function resendVerificationLink() {
     hideLoading();
     showToast('Failed to resend email: ' + e.message, 'error');
   }
+}
+
+// --- 19. CLIENT-SIDE REAL-TIME NOTIFICATIONS & SYNTH CHIME ---
+let lecturerInitialLoadDone = false;
+let knownQuestionIds = new Set();
+let knownAnswerIds = new Set();
+let unsubRealtimeQuestions = null;
+let unsubRealtimeAnswers = null;
+
+function playWebAudioChime() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+    osc.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.15); // G5
+
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.35);
+  } catch (err) {
+    console.warn('Web Audio chime playback failed:', err);
+  }
+}
+
+function triggerLecturerAlert(title, message, courseCode) {
+  playWebAudioChime();
+  showToast(title + ' (' + courseCode + '): ' + message.substring(0, 50) + '...', 'info');
+
+  if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && document.hidden) {
+    new Notification('Eduplus: ' + title, {
+      body: message,
+      icon: '/icon.png'
+    });
+  }
+}
+
+function setupLecturerRealtimeAlerts(courseCode) {
+  if (!courseCode) return;
+
+  if (unsubRealtimeQuestions) { unsubRealtimeQuestions(); unsubRealtimeQuestions = null; }
+  if (unsubRealtimeAnswers) { unsubRealtimeAnswers(); unsubRealtimeAnswers = null; }
+
+  if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
+    Notification.requestPermission();
+  }
+
+  lecturerInitialLoadDone = false;
+
+  unsubRealtimeQuestions = db.collection('questions')
+    .where('courseCode', '==', courseCode)
+    .onSnapshot(function(snapshot) {
+      snapshot.docChanges().forEach(function(change) {
+        if (change.type === 'added') {
+          const docId = change.doc.id;
+          const data = change.doc.data();
+
+          if (lecturerInitialLoadDone && !knownQuestionIds.has(docId)) {
+            triggerLecturerAlert('New Question', data.text, courseCode);
+          }
+          knownQuestionIds.add(docId);
+        }
+      });
+    });
+
+  unsubRealtimeAnswers = db.collection('answers')
+    .where('courseCode', '==', courseCode)
+    .onSnapshot(function(snapshot) {
+      snapshot.docChanges().forEach(function(change) {
+        if (change.type === 'added') {
+          const docId = change.doc.id;
+          const data = change.doc.data();
+
+          if (lecturerInitialLoadDone && !knownAnswerIds.has(docId)) {
+            triggerLecturerAlert('New Answer from ' + (data.studentName || 'Student'), data.answerText, courseCode);
+          }
+          knownAnswerIds.add(docId);
+        }
+      });
+    });
+
+  setTimeout(function() {
+    lecturerInitialLoadDone = true;
+  }, 1500);
 }
