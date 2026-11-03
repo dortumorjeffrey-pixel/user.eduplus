@@ -150,7 +150,6 @@ function showLoading(text) {
   if (textEl) textEl.textContent = text || 'Loading...';
   if (overlay) overlay.classList.add('active');
 
-  // SAFETY FAILSAFE: Never let the loading screen get stuck for more than 3.5 seconds
   clearTimeout(loadingTimeoutTimer);
   loadingTimeoutTimer = setTimeout(function() {
     hideLoading();
@@ -615,7 +614,6 @@ function setAvatarImage(previewId, dataInputId, urlOrBase64) {
   }
 }
 
-// Fullscreen Lightbox
 function viewPhotoInLightbox(imgSrc, captionText) {
   if (!imgSrc) {
     showToast('No picture uploaded yet.', 'info');
@@ -909,7 +907,6 @@ async function handleGoogleSignIn(role) {
     }
 
     if (!doc.exists) {
-      // Prompt for registration
       if (role === 'student') {
         hideLoading();
         var googleStudentName = user.displayName || 'Google Student';
@@ -1210,8 +1207,6 @@ function requireAuth(expectedRole, onReadyCallback) {
       currentUserData.uid = user.uid;
 
       hideLoading();
-
-      // Check subscription
       checkAndEnforceSubscription();
 
       if (onReadyCallback) {
@@ -1685,6 +1680,10 @@ function loadQuestionsForStudent(courseCode) {
       });
 
       if (countBadge) countBadge.textContent = questions.length;
+      
+      // Update Student Counter Badges (Tab Badge & Expanded View)
+      updateStudentCounters(questions.length, parseInt(document.getElementById('stuAnswerCountBadge')?.textContent || '0', 10));
+
       questions.sort(function(a, b) { return a._ts.getTime() - b._ts.getTime(); });
 
       if (questions.length === 0) {
@@ -1798,6 +1797,10 @@ function loadAnswersForStudent(courseCode) {
       });
 
       if (countBadge) countBadge.textContent = answers.length;
+      
+      // Update Student Counter Badges (Tab Badge & Expanded View)
+      updateStudentCounters(parseInt(document.getElementById('stuQuestionCountBadge')?.textContent || '0', 10), answers.length);
+
       answers.sort(function(a, b) { return a._ts.getTime() - b._ts.getTime(); });
 
       if (answers.length === 0) {
@@ -1952,7 +1955,6 @@ async function studentDeleteAllQuestions() {
 // --- 17. LECTURER DASHBOARD CONTROLLERS & REAL-TIME ALERTS ---
 async function requestLecturerNotificationPermission() {
   try {
-    // Check current permission state before asking to prevent browser console spam
     if (typeof Notification === 'undefined') return;
     
     if (Notification.permission === 'blocked' || Notification.permission === 'denied') {
@@ -1965,7 +1967,6 @@ async function requestLecturerNotificationPermission() {
       if (permission !== 'granted') return;
     }
 
-    // Only attempt FCM token retrieval if permission is explicitly granted
     const messaging = firebase.messaging();
     const token = await messaging.getToken({ 
       vapidKey: 'BJBO8yK_V-eTvqcwdGw4vHvbTMn9zdiuGzHvDpqE3y02BsAKSwuOIM5heddfHmNtG84Gur0XgDYvyEemeebyfj0' 
@@ -1977,7 +1978,6 @@ async function requestLecturerNotificationPermission() {
       }, { merge: true });
     }
   } catch (error) {
-    // Catch errors silently so execution continues and showLoading() can close normally
     console.warn('Notification permission setup skipped:', error);
   }
 }
@@ -1997,12 +1997,9 @@ function initLecturerDashboard() {
       }
     }
 
-    // Request browser notification permissions on lecturer dashboard login
     requestLecturerNotificationPermission();
-
     renderLecturerCourses();
 
-    // Enable client-side real-time pop-ups and chimes for active course
     if (currentCourseCode) {
       setupLecturerRealtimeAlerts(currentCourseCode);
     }
@@ -2077,7 +2074,6 @@ function renderLecturerCourses() {
   }
   filterSelect.value = currentCourseCode;
   
-  // Setup real-time alerts for the active course
   setupLecturerRealtimeAlerts(currentCourseCode);
   switchLecturerTab(activeLecturerTab);
 }
@@ -2263,6 +2259,10 @@ function loadQuestionsForLecturer() {
       });
 
       if (countBadge) countBadge.textContent = questions.length;
+      
+      // Update Lecturer Counter Badges (Tab Badge & Expanded View)
+      updateLecturerCounters(questions.length, parseInt(document.getElementById('lecAnswerCountBadge')?.textContent || '0', 10));
+
       questions.sort(function(a, b) { return a._ts.getTime() - b._ts.getTime(); });
 
       if (questions.length === 0) {
@@ -2338,6 +2338,10 @@ function loadAnswersForLecturer() {
       });
 
       if (countBadge) countBadge.textContent = answers.length;
+      
+      // Update Lecturer Counter Badges (Tab Badge & Expanded View)
+      updateLecturerCounters(parseInt(document.getElementById('lecQuestionCountBadge')?.textContent || '0', 10), answers.length);
+
       answers.sort(function(a, b) { return a._ts.getTime() - b._ts.getTime(); });
 
       if (answers.length === 0) {
