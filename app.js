@@ -1925,45 +1925,103 @@ async function studentDeleteSingleQuestion(docId) {
   }
 }
 
+async function studentDeleteAllQuestions() {
+  if (!checkAndEnforceSubscription()) return;
+  if (!currentCourseCode) {
+    showToast('No active course selected.', 'error');
+    return;
+  }
+  if (!confirm('Are you sure you want to delete all your questions for ' + currentCourseCode + '?')) return;
+
+  var btnClear = document.getElementById('btnStuClearQuestions');
+  if (btnClear) btnClear.disabled = true;
+
+  showLoading('Clearing your questions...');
+  try {
+    var snapshot = await db.collection('questions')
+      .where('courseCode', '==', currentCourseCode)
+      .get();
+
+    var batch = db.batch();
+    var count = 0;
+    snapshot.docs.forEach((doc) => {
+      var data = doc.data();
+      if (data.senderEmail === currentUserData.email.toLowerCase()) {
+        batch.delete(doc.ref);
+        count++;
+      }
+    });
+
+    if (count > 0) {
+      await batch.commit();
+    }
+
+    hideLoading();
+    if (btnClear) btnClear.disabled = false;
+    showToast('All your questions for this course have been cleared.', 'success');
+  } catch (err) {
+    hideLoading();
+    if (btnClear) btnClear.disabled = false;
+    showToast('Failed to clear questions: ' + err.message, 'error');
+  }
+}
+
 async function clearStudentAnswerHistory() {
+  if (!checkAndEnforceSubscription()) return;
   if (!currentUserData || !currentUserData.uid) {
     showToast('You must be logged in to clear history.', 'error');
     return;
   }
+  if (!currentCourseCode) {
+    showToast('No active course selected.', 'error');
+    return;
+  }
 
-  // Confirm with the user before deleting
-  const confirmed = confirm('Are you sure you want to clear all your submitted answers? This cannot be undone.');
+  const confirmed = confirm('Are you sure you want to clear all your submitted answers for ' + currentCourseCode + '? This cannot be undone.');
   if (!confirmed) return;
 
-  try {
-    showToast('Clearing your submission history...', 'info');
+  var btnClear = document.getElementById('clearHistoryBtn');
+  if (btnClear) btnClear.disabled = true;
 
-    // Query all answers submitted by the current student ID
+  showLoading('Clearing your submission history...');
+
+  try {
     const snapshot = await db.collection('answers')
-      .where('studentId', '==', currentUserData.uid)
+      .where('courseCode', '==', currentCourseCode)
       .get();
 
     if (snapshot.empty) {
+      hideLoading();
+      if (btnClear) btnClear.disabled = false;
       showToast('No submitted answers found to clear.', 'info');
       return;
     }
 
-    // Use a Firestore batch to delete all documents efficiently
     const batch = db.batch();
+    let count = 0;
     snapshot.docs.forEach((doc) => {
-      batch.delete(doc.ref);
+      const data = doc.data();
+      if (data.studentUid === currentUserData.uid || data.studentEmail === currentUserData.email.toLowerCase()) {
+        batch.delete(doc.ref);
+        count++;
+      }
     });
 
-    await batch.commit();
-
-    // Clear local UI elements or lists
-    const historyContainer = document.getElementById('studentAnswersList');
-    if (historyContainer) {
-      historyContainer.innerHTML = '<p class="text-muted">No submission history found.</p>';
+    if (count > 0) {
+      await batch.commit();
     }
 
+    const historyContainer = document.getElementById('stuAnswerList');
+    if (historyContainer) {
+      historyContainer.innerHTML = '<div class="empty-state"><span class="material-icons">task_alt</span>You have not submitted any verbal answers for this course yet.</div>';
+    }
+
+    hideLoading();
+    if (btnClear) btnClear.disabled = false;
     showToast('Your answer history has been cleared successfully.', 'success');
   } catch (error) {
+    hideLoading();
+    if (btnClear) btnClear.disabled = false;
     console.error('Error clearing answer history:', error);
     showToast('Failed to clear history. Please try again.', 'error');
   }
