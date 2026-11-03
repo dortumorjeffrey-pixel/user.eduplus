@@ -19,30 +19,33 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Handle background notifications and force top-screen display
-messaging.onBackgroundMessage((payload) => {
-  const notificationTitle = payload.notification ? payload.notification.title : 'Eduplus Alert';
-  const notificationOptions = {
-    body: payload.notification ? payload.notification.body : 'New student message received.',
-    icon: '/icon.png', // Ensure you have an icon.png in your root folder
+// Handle incoming background push notifications
+self.addEventListener('push', (event) => {
+  const data = event.data ? event.data.json() : {};
+  
+  const title = data.title || 'Eduplus Notification';
+  const options = {
+    body: data.body || 'You have a new update in your classroom.',
+    icon: '/icon.png',
     badge: '/icon.png',
-    vibrate: [200, 100, 200], // Triggers phone vibration for attention
-    tag: 'eduplus-alert',
-    renotify: true,
-    priority: 'high', // Requests high priority for top-screen display
-    data: { url: '/lecturer-dashboard.html' }
+    vibrate: [100, 50, 100],
+    data: {
+      url: data.url || '/'
+    }
   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
 });
 
-// Handle tap on the notification banner to open the website/app
+// Open app when user taps the notification
 self.addEventListener('notificationclick', (event) => {
-  event.notification.close(); // Dismisses the notification banner
-
-  // Define the exact page you want to open when tapped
-  const targetUrl = self.location.origin + '/lecturer-dashboard.html';
-
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow(event.notification.data.url)
+  );
+});
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
       // 1. Check if the app is already open in a tab or window; if so, focus it
