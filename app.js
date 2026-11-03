@@ -1910,11 +1910,33 @@ async function studentDeleteAllQuestions() {
 // --- 17. LECTURER DASHBOARD CONTROLLERS & REAL-TIME ALERTS ---
 async function requestLecturerNotificationPermission() {
   try {
-    if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
-      await Notification.requestPermission();
+    // Check current permission state before asking to prevent browser console spam
+    if (typeof Notification === 'undefined') return;
+    
+    if (Notification.permission === 'blocked' || Notification.permission === 'denied') {
+      console.warn('Notifications are blocked by the user in browser settings.');
+      return;
+    }
+
+    if (Notification.permission !== 'granted') {
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') return;
+    }
+
+    // Only attempt FCM token retrieval if permission is explicitly granted
+    const messaging = firebase.messaging();
+    const token = await messaging.getToken({ 
+      vapidKey: 'BJBO8yK_V-eTvqcwdGw4vHvbTMn9zdiuGzHvDpqE3y02BsAKSwuOIM5heddfHmNtG84Gur0XgDYvyEemeebyfj0' 
+    });
+    
+    if (token && currentUserData && currentUserData.uid) {
+      await db.collection('lecturers').doc(currentUserData.uid).set({
+        fcmToken: token
+      }, { merge: true });
     }
   } catch (error) {
-    console.warn('Notification permission error:', error);
+    // Catch errors silently so execution continues and showLoading() can close normally
+    console.warn('Notification permission setup skipped:', error);
   }
 }
 
