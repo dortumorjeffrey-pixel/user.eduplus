@@ -144,6 +144,17 @@ function updateStudentCounters(qCount, aCount) {
 // --- 4. TOAST NOTIFICATIONS & LOADING OVERLAY (WITH SAFETY TIMEOUT) ---
 let loadingTimeoutTimer = null;
 
+// Request Notification Permission
+if ('Notification' in window && 'serviceWorker' in navigator) {
+  Notification.requestPermission().then((permission) => {
+    if (permission === 'granted') {
+      console.log('Notification permission granted.');
+    } else {
+      console.log('Notification permission denied.');
+    }
+  });
+}
+
 function showLoading(text) {
   var overlay = document.getElementById('loadingOverlay');
   var textEl = document.getElementById('loadingText');
