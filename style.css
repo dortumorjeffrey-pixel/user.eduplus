@@ -562,6 +562,26 @@ select.form-control option {
   color: #fff;
 }
 
+.tab-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Small pill badge on the tab header */
+.tab-badge {
+  background: #38bdf8;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  min-width: 20px;
+  text-align: center;
+  display: inline-block;
+}
+
 #loading-text {
   color: var(--text-muted);
   font-size: 14.5px;
