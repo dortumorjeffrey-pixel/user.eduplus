@@ -109,6 +109,38 @@ function maskEmail(email) {
   return name[0] + '***' + name[name.length - 1] + '@' + parts[1];
 }
 
+// Update Lecturer Badges & Existing Expanded Counters
+function updateLecturerCounters(qCount, aCount) {
+  const lqBadge = document.getElementById('lecturerQBadge');
+  const labBadge = document.getElementById('lecturerABadge');
+  
+  if (lqBadge) lqBadge.textContent = qCount;
+  if (labBadge) labBadge.textContent = aCount;
+
+  // Maintain your existing expanded view counters for lecturer
+  const expQ = document.getElementById('expandedLecturerQCount');
+  if (expQ) expQ.textContent = qCount;
+
+  const expA = document.getElementById('expandedLecturerACount');
+  if (expA) expA.textContent = aCount;
+}
+
+// Update Student Badges & Existing Expanded Counters
+function updateStudentCounters(qCount, aCount) {
+  const sqBadge = document.getElementById('studentQBadge');
+  const sabBadge = document.getElementById('studentABadge');
+  
+  if (sqBadge) sqBadge.textContent = qCount;
+  if (sabBadge) sabBadge.textContent = aCount;
+
+  // Maintain your existing expanded view counters for student
+  const expQ = document.getElementById('expandedStudentQCount');
+  if (expQ) expQ.textContent = qCount;
+
+  const expA = document.getElementById('expandedStudentACount');
+  if (expA) expA.textContent = aCount;
+}
+
 // --- 4. TOAST NOTIFICATIONS & LOADING OVERLAY (WITH SAFETY TIMEOUT) ---
 let loadingTimeoutTimer = null;
 
