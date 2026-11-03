@@ -1925,30 +1925,47 @@ async function studentDeleteSingleQuestion(docId) {
   }
 }
 
-async function studentDeleteAllQuestions() {
-  if (!checkAndEnforceSubscription()) return;
-  if (!currentCourseCode) return;
-  if (!confirm('Are you sure you want to delete all visible questions for this course?')) return;
+async function clearStudentAnswerHistory() {
+  if (!currentUserData || !currentUserData.uid) {
+    showToast('You must be logged in to clear history.', 'error');
+    return;
+  }
 
-  var btnClear = document.getElementById('btnStuClearQuestions');
-  if (btnClear) btnClear.disabled = true;
+  // Confirm with the user before deleting
+  const confirmed = confirm('Are you sure you want to clear all your submitted answers? This cannot be undone.');
+  if (!confirmed) return;
 
-  showLoading('Deleting questions...');
   try {
-    var snap = await db.collection('questions')
-      .where('courseCode', '==', currentCourseCode)
-      .where('senderEmail', '==', currentUserData.email.toLowerCase())
+    showToast('Clearing your submission history...', 'info');
+
+    // Query all answers submitted by the current student ID
+    const snapshot = await db.collection('answers')
+      .where('studentId', '==', currentUserData.uid)
       .get();
-    var batch = db.batch();
-    snap.forEach(function(doc) { batch.delete(doc.ref); });
+
+    if (snapshot.empty) {
+      showToast('No submitted answers found to clear.', 'info');
+      return;
+    }
+
+    // Use a Firestore batch to delete all documents efficiently
+    const batch = db.batch();
+    snapshot.docs.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+
     await batch.commit();
-    hideLoading();
-    if (btnClear) btnClear.disabled = false;
-    showToast('All questions deleted successfully.', 'success');
-  } catch (err) {
-    hideLoading();
-    if (btnClear) btnClear.disabled = false;
-    showToast('Failed to delete questions: ' + err.message, 'error');
+
+    // Clear local UI elements or lists
+    const historyContainer = document.getElementById('studentAnswersList');
+    if (historyContainer) {
+      historyContainer.innerHTML = '<p class="text-muted">No submission history found.</p>';
+    }
+
+    showToast('Your answer history has been cleared successfully.', 'success');
+  } catch (error) {
+    console.error('Error clearing answer history:', error);
+    showToast('Failed to clear history. Please try again.', 'error');
   }
 }
 
