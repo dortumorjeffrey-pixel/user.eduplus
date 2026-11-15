@@ -39,8 +39,8 @@
   <!-- Application Header -->
   <header class="app-header glass">
     <a href="lecturer-dashboard.html" class="logo">
-     <span class="icon" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 12px; color: #fff; font-weight: 900; font-size: 16px; font-family: sans-serif;">E+</span>
-        <span>Eduplus</span>
+      <span class="material-icons icon">school</span>
+      <span>Eduplus</span>
     </a>
     <div style="display:flex; gap:8px; align-items:center;">
       <button class="btn btn-secondary btn-small" onclick="openProfileModal()">
@@ -70,6 +70,7 @@
             <span id="lecSubBadge" style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); color: #22c55e;">Active Pass</span>
           </div>
           <div style="font-size: 15px; font-weight: 700;" id="lecDashUserInfo">Loading lecturer profile...</div>
+          <div id="lecSubMeta" style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Loading subscription details...</div>
         </div>
       </div>
     </div>
@@ -93,6 +94,9 @@
       </div>
 
       <div id="lecCoursesWrapper" style="display: none; margin-top: 16px; transition: all 0.3s ease;">
+        <p style="font-size:12px; color:var(--text-muted); line-height:1.55; margin-bottom:12px;">
+          Unregistering archives the offering for students and frees its code for a future offering. Questions and verbal answers are kept.
+        </p>
         <div id="lecCoursesContainer"></div>
       </div>
     </div>
@@ -110,12 +114,10 @@
       <button class="tab-btn active" id="tabBtnLecAnon" onclick="switchLecturerTab('anon')">
         <span class="material-icons" style="font-size:16px; vertical-align:middle; margin-right:4px;">visibility_off</span>
         <span>Anonymous Student Questions</span>
-        <span id="lecturerQBadge" class="tab-badge">0</span>
       </button>
       <button class="tab-btn" id="tabBtnLecAnswers" onclick="switchLecturerTab('answers')">
         <span class="material-icons" style="font-size:16px; vertical-align:middle; margin-right:4px;">how_to_reg</span>
         <span>Student Verbal Answers</span>
-        <span id="lecturerABadge" class="tab-badge">0</span>
       </button>
     </div>
 
@@ -153,6 +155,9 @@
       </button>
 
       <h3 style="margin-bottom: 14px; font-size: 18px;">Add New Course</h3>
+      <p style="font-size:12px; color:var(--text-muted); line-height:1.55; margin-bottom:14px;">
+        A course code can be used by only one active course. Re-registering the same code and title after it was closed creates a separate offering with its own questions and answers.
+      </p>
       
       <div class="form-group">
         <label for="newCourseCode">Course Code</label>
@@ -170,6 +175,38 @@
           <span class="material-icons" style="font-size: 16px;">add</span>
           <span>Add Course</span>
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DELETE ACCOUNT (30-DAY RECOVERY) -->
+  <div id="deleteAccountModal" class="modal-overlay">
+    <div class="glass modal-box">
+      <button onclick="closeModal('deleteAccountModal')" style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: var(--text-main); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Close">
+        <span class="material-icons" style="font-size: 18px;">close</span>
+      </button>
+
+      <div style="width: 58px; height: 58px; border-radius: 50%; background: rgba(239,68,68,0.14); display:flex; align-items:center; justify-content:center; margin: 0 auto 12px auto;">
+        <span class="material-icons" style="font-size:32px; color:#ef4444;">delete_forever</span>
+      </div>
+      <h3 style="margin-bottom: 8px; font-size: 19px; text-align:center;">Delete Your Account?</h3>
+      <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; text-align:center;">
+        Your account will be disabled and kept recoverable for <strong>30 days</strong>. Your course offerings will be closed for students when the account is permanently removed. Use Find Account within 30 days to recover the account.
+      </p>
+
+      <div id="deleteAccountPasswordGroup">
+        <div class="form-group">
+          <label for="deleteAccountPassword">Confirm with your current password</label>
+          <input type="password" id="deleteAccountPassword" class="form-control" placeholder="Current password" autocomplete="current-password" />
+        </div>
+      </div>
+      <div id="deleteAccountGoogleNote" style="display:none; padding:12px; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.3); border-radius:10px; font-size:12.5px; color:#7dd3fc; margin-bottom:16px; line-height:1.5;">
+        This account signs in with Google. You will be asked to confirm with Google before deletion is scheduled.
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn btn-secondary btn-block" onclick="closeModal('deleteAccountModal')">Keep My Account</button>
+        <button class="btn btn-danger btn-block" id="btnConfirmDeleteAccount" onclick="deleteAccount()">Delete Account</button>
       </div>
     </div>
   </div>
@@ -214,6 +251,9 @@
       <div class="form-group">
         <input type="password" id="profileNewPass" class="form-control" placeholder="New Password (min 6 chars)" />
       </div>
+      <div class="form-group">
+        <input type="password" id="profileConfirmPass" class="form-control" placeholder="Confirm New Password" />
+      </div>
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button class="btn btn-secondary btn-block" onclick="closeModal('editProfileModal')">Cancel</button>
@@ -221,9 +261,9 @@
       </div>
 
       <div style="margin-top:18px; text-align:center;">
-        <button class="btn btn-danger btn-small" id="btnStuDelete" onclick="deleteAccount()">
+        <button class="btn btn-danger btn-small" id="btnLecDeleteAccount" onclick="openDeleteAccountModal()">
           <span class="material-icons" style="font-size:14px;">delete_forever</span>
-          <span>Delete Account Permanently</span>
+          <span>Delete Account (30-day recovery)</span>
         </button>
       </div>
     </div>
