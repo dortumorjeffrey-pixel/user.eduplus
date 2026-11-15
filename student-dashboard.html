@@ -39,8 +39,8 @@
   <!-- Application Header -->
   <header class="app-header glass">
     <a href="student-dashboard.html" class="logo">
-     <span class="icon" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 12px; color: #fff; font-weight: 900; font-size: 16px; font-family: sans-serif;">E+</span>
-        <span>Eduplus</span>
+      <span class="material-icons icon">school</span>
+      <span>Eduplus</span>
     </a>
     <div style="display:flex; gap:8px; align-items:center;">
       <button class="btn btn-secondary btn-small" onclick="openProfileModal()">
@@ -70,6 +70,7 @@
             <span id="stuSubBadge" style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); color: #22c55e;">Active Pass</span>
           </div>
           <div style="font-size: 15px; font-weight: 700;" id="stuDashUserInfo">Loading student profile...</div>
+          <div id="stuSubMeta" style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Loading subscription details...</div>
         </div>
       </div>
     </div>
@@ -80,13 +81,29 @@
       <button class="btn btn-warning btn-small" onclick="openProfileModal()">Update Profile Now</button>
     </div>
 
-    <!-- STU VIEW 1: BROWSE COURSES -->
+    <!-- STU VIEW 1: MY COURSES -->
     <div id="stuBrowseView" class="fade-in">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px;">
-        <h3 style="font-size: 18px; font-weight: 700;">Available Courses</h3>
-        <span style="font-size: 12px; color: var(--text-muted);">Real-time classroom directory</span>
+      <div class="section-heading">
+        <div>
+          <h3>My Courses</h3>
+          <p class="section-sub">Only active offerings appear here. Closed courses are kept below with their archive status.</p>
+        </div>
+        <button class="btn btn-primary btn-small" onclick="openBrowseCoursesModal()">
+          <span class="material-icons" style="font-size:16px;">explore</span>
+          <span>Browse &amp; Join</span>
+        </button>
       </div>
-      <div id="courseListContainer"></div>
+      <div id="stuMyCoursesContainer"></div>
+
+      <div id="stuClosedCoursesSection" style="display:none; margin-top:26px;">
+        <div class="section-heading">
+          <div>
+            <h3 style="color:#fca5a5;">Closed Courses — Unregistered</h3>
+            <p class="section-sub">These offerings were closed by the lecturer or because the lecturer deleted their account. They deliver no new questions or answers.</p>
+          </div>
+        </div>
+        <div id="stuClosedCoursesContainer"></div>
+      </div>
     </div>
 
     <!-- STU VIEW 2: QUESTION & ANSWER INTERFACE -->
@@ -110,12 +127,10 @@
         <button class="tab-btn active" id="tabBtnStuAnon" onclick="switchStudentTab('anon')">
           <span class="material-icons" style="font-size:16px; vertical-align:middle; margin-right:4px;">visibility_off</span>
           <span>Anonymous Question</span>
-          <span id="studentQBadge" class="tab-badge">0</span>
         </button>
         <button class="tab-btn" id="tabBtnStuAnswer" onclick="switchStudentTab('answer')">
           <span class="material-icons" style="font-size:16px; vertical-align:middle; margin-right:4px;">record_voice_over</span>
           <span>Submit Verbal Answer</span>
-          <span id="studentABadge" class="tab-badge">0</span>
         </button>
       </div>
 
@@ -144,7 +159,7 @@
         <div id="stuQuestionList"></div>
       </div>
 
-     <!-- TAB 2: VERBAL ANSWERS -->
+      <!-- TAB 2: VERBAL ANSWERS -->
       <div id="tabContentStuAnswer" style="display:none;">
         <div class="glass" style="padding:18px; margin-bottom:20px;">
           <div class="form-group" style="margin-bottom:12px;">
@@ -158,19 +173,73 @@
             </button>
           </div>
         </div>
-        
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-          <h4 style="font-size: 15px; font-weight: 700;">Your Submitted Verbal Answers (<span id="stuAnswerCountBadge">0</span>)</h4>
-          <button id="clearHistoryBtn" class="btn btn-danger btn-small" onclick="clearStudentAnswerHistory()">
-            <span class="material-icons" style="font-size:15px;">delete_sweep</span>
-            <span>Clear History</span>
-          </button>
-        </div>
+
+        <h4 style="font-size: 15px; font-weight: 700; margin-bottom:14px;">Your Submitted Verbal Answers (<span id="stuAnswerCountBadge">0</span>)</h4>
         <div id="stuAnswerList"></div>
       </div>
+    </div>
   </main>
 
-  <!-- MODAL: EDIT PROFILE -->
+  <!-- MODAL: BROWSE & JOIN COURSES -->
+  <div id="browseCoursesModal" class="modal-overlay">
+    <div class="glass modal-box" style="max-height: 86vh; overflow-y: auto;">
+      <button onclick="closeModal('browseCoursesModal')" style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: var(--text-main); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Close">
+        <span class="material-icons" style="font-size: 18px;">close</span>
+      </button>
+
+      <h3 style="margin-bottom: 6px; font-size: 18px;">Browse &amp; Join Courses</h3>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+        Join an active course offering. If you already hold a closed card for the same code, joining the new offering replaces it.
+      </p>
+
+      <div class="inline-join-row">
+        <div class="form-group" style="flex:1; margin-bottom:0;">
+          <label for="stuJoinCourseCode">Join by Course Code</label>
+          <input type="text" id="stuJoinCourseCode" class="form-control" placeholder="e.g. SENG 402" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()" onkeydown="if (event.key === 'Enter') { event.preventDefault(); joinStudentCourseByCode(); }" />
+        </div>
+        <button class="btn btn-primary" type="button" onclick="joinStudentCourseByCode()">
+          <span class="material-icons" style="font-size:16px;">add</span>
+          <span>Join</span>
+        </button>
+      </div>
+
+      <div id="stuBrowseCoursesList" style="margin-top: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: DELETE ACCOUNT (30-DAY RECOVERY) -->
+  <div id="deleteAccountModal" class="modal-overlay">
+    <div class="glass modal-box">
+      <button onclick="closeModal('deleteAccountModal')" style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: var(--text-main); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Close">
+        <span class="material-icons" style="font-size: 18px;">close</span>
+      </button>
+
+      <div style="width: 58px; height: 58px; border-radius: 50%; background: rgba(239,68,68,0.14); display:flex; align-items:center; justify-content:center; margin: 0 auto 12px auto;">
+        <span class="material-icons" style="font-size:32px; color:#ef4444;">delete_forever</span>
+      </div>
+      <h3 style="margin-bottom: 8px; font-size: 19px; text-align:center;">Delete Your Account?</h3>
+      <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; text-align:center;">
+        Your account will be disabled and kept recoverable for <strong>30 days</strong>. Sign in or use Find Account during this period to cancel the deletion. After 30 days, your account and its data are permanently removed.
+      </p>
+
+      <div id="deleteAccountPasswordGroup">
+        <div class="form-group">
+          <label for="deleteAccountPassword">Confirm with your current password</label>
+          <input type="password" id="deleteAccountPassword" class="form-control" placeholder="Current password" autocomplete="current-password" />
+        </div>
+      </div>
+      <div id="deleteAccountGoogleNote" style="display:none; padding:12px; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.3); border-radius:10px; font-size:12.5px; color:#7dd3fc; margin-bottom:16px; line-height:1.5;">
+        This account signs in with Google. You will be asked to confirm with Google before deletion is scheduled.
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn btn-secondary btn-block" onclick="closeModal('deleteAccountModal')">Keep My Account</button>
+        <button class="btn btn-danger btn-block" id="btnConfirmDeleteAccount" onclick="deleteAccount()">Delete Account</button>
+      </div>
+    </div>
+  </div>
+
+
   <div id="editProfileModal" class="modal-overlay">
     <div class="glass modal-box" style="max-height: 85vh; overflow-y: auto;">
       <button onclick="closeModal('editProfileModal')" style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: var(--text-main); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Close">
@@ -187,6 +256,17 @@
       <div class="form-group" id="profileIndexGroup">
         <label>Index / Student ID</label>
         <input type="text" id="profileEditIndex" class="form-control" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()" />
+      </div>
+
+      <div class="form-group" id="profileLevelGroup">
+        <label for="profileEditLevel">Level</label>
+        <select id="profileEditLevel" class="form-control">
+          <option value="Level 100">Level 100</option>
+          <option value="Level 200">Level 200</option>
+          <option value="Level 300">Level 300</option>
+          <option value="Level 400">Level 400</option>
+          <option value="Postgraduate">Postgraduate</option>
+        </select>
       </div>
 
       <div class="form-group">
@@ -215,6 +295,9 @@
       <div class="form-group">
         <input type="password" id="profileNewPass" class="form-control" placeholder="New Password (min 6 chars)" />
       </div>
+      <div class="form-group">
+        <input type="password" id="profileConfirmPass" class="form-control" placeholder="Confirm New Password" />
+      </div>
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button class="btn btn-secondary btn-block" onclick="closeModal('editProfileModal')">Cancel</button>
@@ -222,9 +305,9 @@
       </div>
 
       <div style="margin-top:18px; text-align:center;">
-        <button class="btn btn-danger btn-small" id="btnStuDelete" onclick="deleteAccount()">
+        <button class="btn btn-danger btn-small" id="btnStuDelete" onclick="openDeleteAccountModal()">
           <span class="material-icons" style="font-size:14px;">delete_forever</span>
-          <span>Delete Account Permanently</span>
+          <span>Delete Account (30-day recovery)</span>
         </button>
       </div>
     </div>
