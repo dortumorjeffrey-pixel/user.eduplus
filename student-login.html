@@ -39,8 +39,8 @@
   <!-- Application Header -->
   <header class="app-header glass">
     <a href="index.html" class="logo">
-      <span class="icon" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 12px; color: #fff; font-weight: 900; font-size: 16px; font-family: sans-serif;">E+</span>
-        <span>Eduplus</span>
+      <span class="material-icons icon">school</span>
+      <span>Eduplus</span>
     </a>
   </header>
 
@@ -58,7 +58,27 @@
         <span class="material-icons" style="font-size: 26px; color: var(--primary);">face</span>
         <h2 style="font-size: 22px; font-weight: 700;">Student Sign In</h2>
       </div>
-      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 22px;">Access your active student portal and course feeds</p>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px;">Access your active student portal and course feeds</p>
+
+      <div id="loginNoticeBanner" style="display:none; padding:12px; background:rgba(245,158,11,0.13); border:1px solid rgba(245,158,11,0.35); border-radius:10px; font-size:12.5px; color:#fbbf24; margin-bottom:14px; line-height:1.5;">
+        <span id="loginNoticeText"></span>
+      </div>
+
+      <div id="resetLinkTimerBanner" style="display:none; padding:14px; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:12px; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:6px;">
+          <strong style="font-size:12.5px; color:#7dd3fc;">Password reset link sent</strong>
+          <span id="resetLinkCountdown" style="font-size:18px; font-weight:800; color:#fbbf24; font-variant-numeric:tabular-nums;">10:00</span>
+        </div>
+        <div id="resetTimerEmailDisplay" style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;"></div>
+        <div id="resetTimerPaidStatus" style="font-size:11.5px; color:var(--text-muted); line-height:1.5; margin-bottom:8px;">Password reset is free.</div>
+        <div id="resetLinkExpiredMsg" style="display:none; font-size:11.5px; color:#fca5a5; line-height:1.5; margin-bottom:8px;">
+          This link display has expired. Use Resend below to send a fresh free link.
+        </div>
+        <button type="button" class="btn btn-secondary btn-small" id="btnResendResetLink" onclick="resendPasswordResetLink()">
+          <span class="material-icons" style="font-size:15px;">refresh</span>
+          <span>Resend Reset Link (Free)</span>
+        </button>
+      </div>
 
       <form onsubmit="event.preventDefault(); loginUser('student');">
         <div class="form-group">
@@ -85,8 +105,8 @@
       </div>
 
       <div style="display: flex; justify-content: space-between; margin-top: 18px; font-size: 12px;">
-        <a href="javascript:void(0)" style="color: var(--secondary); text-decoration: none;" onclick="openPaidForgotPassword('student')">Forgot Password?</a>
-        <a href="javascript:void(0)" style="color: var(--secondary); text-decoration: none;" onclick="openFindAccountModal('student')">Find Account</a>
+        <a href="javascript:void(0)" style="color: var(--secondary); text-decoration: none;" onclick="openForgotPassword('student')">Forgot Password? (Free)</a>
+        <a href="javascript:void(0)" style="color: var(--secondary); text-decoration: none;" onclick="openFindAccountModal('student')">Find Account (Free)</a>
       </div>
 
       <div style="margin-top: 22px; border-top: 1px solid var(--glass-border); padding-top: 16px; text-align: center; font-size: 13px;">
@@ -100,7 +120,7 @@
   <div id="findAccountModal" class="modal-overlay">
     <div class="glass modal-box">
       <h3 style="margin-bottom: 8px; font-size: 18px;">Find Account by Name</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Search for your registered account name to trigger a 5 GHS paid password reset link via Paystack.</p>
+      <p id="findAccountRoleDesc" style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Type the full or part of the name you used during registration. Locate your account below and click "Reset Password" to receive a reset link by email. This service is free.</p>
       <div class="form-group">
         <input type="text" id="findAccountName" class="form-control" placeholder="Type your full name..." oninput="searchAccountsByName(this.value)" />
       </div>
@@ -120,14 +140,9 @@
 
   <script src="app.js"></script>
   <script>
-    // Pre-fill email from query params if redirected from verification or registration
+    // Pre-fill email from query params and restore any pending reset banner.
     window.addEventListener('DOMContentLoaded', function() {
-      var params = new URLSearchParams(window.location.search);
-      var email = params.get('email');
-      if (email) {
-        var emailInput = document.getElementById('stuLoginEmail');
-        if (emailInput) emailInput.value = email;
-      }
+      initLoginPage('student');
     });
   </script>
 </body>
