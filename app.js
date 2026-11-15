@@ -4,7 +4,7 @@
 // ============================================================================
 
 // --- 1. CONFIGURATION ---
-const PAYSTACK_PUBLIC_KEY = "pk_test_35c770e8b45d22fd7ba408998e63536523613cc6";
+const PAYSTACK_PUBLIC_KEY = "pk_live_3aae1eec1c5298079ca3d9013fd99929c56110d8";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD4cilr7LTZcl8uCTgWECi82kcdipzEMfo",
