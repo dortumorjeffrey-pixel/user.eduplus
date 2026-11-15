@@ -39,8 +39,8 @@
   <!-- Application Header -->
   <header class="app-header glass">
     <a href="index.html" class="logo">
-       <span class="icon" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 12px; color: #fff; font-weight: 900; font-size: 16px; font-family: sans-serif;">E+</span>
-        <span>Eduplus</span>
+      <span class="material-icons icon">school</span>
+      <span>Eduplus</span>
     </a>
   </header>
 
@@ -82,6 +82,17 @@
         </div>
 
         <div class="form-group">
+          <label for="stuRegLevel">Level</label>
+          <select id="stuRegLevel" class="form-control">
+            <option value="Level 100">Level 100</option>
+            <option value="Level 200">Level 200</option>
+            <option value="Level 300">Level 300</option>
+            <option value="Level 400">Level 400</option>
+            <option value="Postgraduate">Postgraduate</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label for="stuRegEmail">Email Address</label>
           <input type="email" id="stuRegEmail" class="form-control" placeholder="ama@gmail.com" required onblur="checkPrePaymentEmail('student', this.value)" />
           <div style="font-size:11.5px; color:var(--warning); margin-top:5px; display:flex; align-items:center; gap:4px;">
@@ -91,7 +102,12 @@
 
         <div class="form-group">
           <label for="stuRegPass">Password</label>
-          <input type="password" id="stuRegPass" class="form-control" placeholder="•••••••• (Min 6 characters)" required minlength="6" />
+          <input type="password" id="stuRegPass" class="form-control" placeholder="•••••••• (Min 6 characters)" required minlength="6" autocomplete="new-password" />
+        </div>
+
+        <div class="form-group">
+          <label for="stuRegPassConfirm">Confirm Password</label>
+          <input type="password" id="stuRegPassConfirm" class="form-control" placeholder="Re-enter your password" required minlength="6" autocomplete="new-password" />
         </div>
 
         <div class="form-group">
@@ -110,6 +126,10 @@
           </div>
           <input type="hidden" id="stuRegPhotoData" />
         </div>
+
+        <p style="font-size:11.5px; color:var(--text-muted); line-height:1.55; margin: 4px 0 10px 0;">
+          Your password is handled by Firebase Authentication and is never stored in the course database. Password recovery through Forgot Password and Find Account is free.
+        </p>
 
         <button type="submit" class="btn btn-primary btn-block" id="btnStuReg" style="margin-top: 8px;">
           <span class="material-icons" style="font-size: 18px;">payment</span>
